@@ -1,0 +1,43 @@
+# dependencies
+node_modules/
+.pnpm-store/
+.pnp
+.pnp.*
+
+# build
+.next/
+out/
+build/
+dist/
+coverage/
+*.tsbuildinfo
+
+# env
+.env
+.env.*
+!.env.example
+
+# runtime
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# editor / os
+.DS_Store
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.pem
+
+# vercel / supabase
+.vercel/
+supabase/.branches
+supabase/.temp
+
+# test artifacts
+playwright-report/
+test-results/
+.playwright/

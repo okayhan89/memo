@@ -1,0 +1,51 @@
+/* Editorial typography
+ * Display serif (Fraunces) for marketing / hero heads
+ * Sans (Inter + Korean system stack) for UI body
+ * Mono (JetBrains Mono) for code
+ */
+
+:root {
+  --font-sans:
+    var(--font-inter), system-ui, -apple-system, 'Apple SD Gothic Neo', 'Pretendard Variable',
+    'Malgun Gothic', 'Noto Sans KR', sans-serif;
+  --font-display: var(--font-fraunces), 'Times New Roman', Times, Georgia, 'Nanum Myeongjo', serif;
+  --font-mono:
+    var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, 'Cascadia Mono', Menlo, Consolas,
+    'DejaVu Sans Mono', monospace;
+}
+
+html {
+  font-family: var(--font-sans);
+  font-feature-settings:
+    'ss01' on,
+    'cv11' on;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  font-variation-settings:
+    'SOFT' 40,
+    'WONK' 1,
+    'opsz' 144;
+}
+
+code,
+kbd,
+pre,
+.font-mono {
+  font-family: var(--font-mono);
+  font-feature-settings: 'zero' on;
+}
+
+::selection {
+  background: var(--selection);
+  color: var(--ink);
+}
