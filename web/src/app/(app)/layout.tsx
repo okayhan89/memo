@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { listNotes } from '@/features/notes/repository';
+import { listTagsWithCounts } from '@/features/tags/repository';
 import { signOut } from '@/features/auth/actions';
 import { NewNoteButton } from './NewNoteButton';
 import { NotesSidebar } from './NotesSidebar';
@@ -16,7 +17,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   } = await supabase.auth.getUser();
   if (!user) redirect('/login');
 
-  const notes = await listNotes(supabase, user.id);
+  const [notes, tags] = await Promise.all([
+    listNotes(supabase, user.id),
+    listTagsWithCounts(supabase, user.id),
+  ]);
 
   return (
     <div className="bg-paper-sunken grid min-h-dvh grid-cols-[280px_minmax(0,1fr)]">
@@ -30,7 +34,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </Link>
           <NewNoteButton />
         </header>
-        <NotesSidebar notes={notes} />
+        <NotesSidebar notes={notes} tags={tags} />
         <footer className="border-line flex items-center justify-between gap-3 border-t px-4 py-3 text-xs">
           <span className="text-ink-subtle min-w-0 truncate" title={user.email ?? ''}>
             {user.email}

@@ -1,23 +1,47 @@
 'use client';
 
 import Link from 'next/link';
-import { useSelectedLayoutSegments } from 'next/navigation';
+import { useRouter, useSearchParams, useSelectedLayoutSegments } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { formatRelative } from '@/lib/format-date';
 import { cn } from '@/lib/cn';
 import type { NoteSummary } from '@/features/notes/repository';
+import type { TagWithCount } from '@/features/tags/repository';
+import { tagKey } from '@/features/tags/schemas';
 
 type Filter = 'all' | 'favorites';
 
-export function NotesSidebar({ notes }: { notes: NoteSummary[] }) {
+type Props = {
+  notes: NoteSummary[];
+  tags: TagWithCount[];
+};
+
+export function NotesSidebar({ notes, tags }: Props) {
+  const router = useRouter();
   const segments = useSelectedLayoutSegments();
+  const searchParams = useSearchParams();
   const activeId = segments[0] === 'notes' ? segments[1] : undefined;
+  const activeTagSlugs = searchParams.getAll('tag').map(tagKey);
   const [filter, setFilter] = useState<Filter>('all');
 
-  const visible = useMemo(
-    () => (filter === 'favorites' ? notes.filter((n) => n.is_favorite) : notes),
-    [notes, filter],
-  );
+  const visible = useMemo(() => {
+    let list = notes;
+    if (filter === 'favorites') list = list.filter((n) => n.is_favorite);
+    // Tag filtering is done server-side via ?tag params; the sidebar just
+    // reflects the current URL so users can toggle tags off with one click.
+    return list;
+  }, [notes, filter]);
+
+  const toggleTag = (name: string) => {
+    const next = new URLSearchParams(searchParams.toString());
+    const key = tagKey(name);
+    const already = next.getAll('tag').some((t) => tagKey(t) === key);
+    next.delete('tag');
+    const keep = searchParams.getAll('tag').filter((t) => tagKey(t) !== key);
+    keep.forEach((t) => next.append('tag', t));
+    if (!already) next.append('tag', name);
+    router.replace(`/notes${next.toString() ? `?${next.toString()}` : ''}`);
+  };
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -29,6 +53,47 @@ export function NotesSidebar({ notes }: { notes: NoteSummary[] }) {
           ★ 즐겨찾기
         </FilterChip>
       </div>
+
+      {tags.length > 0 ? (
+        <div className="border-line border-b px-3 py-3">
+          <p className="text-ink-subtle mb-2 font-mono text-[10px] tracking-[0.22em] uppercase">
+            태그
+          </p>
+          <ul className="flex flex-wrap gap-1">
+            {tags.map((tag) => {
+              const active = activeTagSlugs.includes(tagKey(tag.name));
+              return (
+                <li key={tag.id}>
+                  <button
+                    type="button"
+                    onClick={() => toggleTag(tag.name)}
+                    className={cn(
+                      'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] transition',
+                      active
+                        ? 'bg-ink text-paper'
+                        : 'border-line text-ink-muted hover:text-ink border',
+                    )}
+                  >
+                    <span aria-hidden>#</span>
+                    <span>{tag.name}</span>
+                    {tag.count > 0 ? (
+                      <span className={active ? 'opacity-80' : 'text-ink-subtle'}>{tag.count}</span>
+                    ) : null}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+          {activeTagSlugs.length > 0 ? (
+            <Link
+              href="/notes"
+              className="text-ink-subtle hover:text-ink mt-2 inline-block text-[11px] underline-offset-4 hover:underline"
+            >
+              필터 해제
+            </Link>
+          ) : null}
+        </div>
+      ) : null}
 
       {visible.length === 0 ? (
         <div className="flex flex-1 flex-col items-start gap-2 px-5 py-6">

@@ -12,7 +12,8 @@
       "Bash(curl -s http://127.0.0.1:3001/login)",
       "Bash(curl -s http://127.0.0.1:3001/ -o /tmp/memo-home.html)",
       "Read(//tmp/**)",
-      "Bash(curl -sI http://127.0.0.1:3001/manifest.webmanifest)"
+      "Bash(curl -sI http://127.0.0.1:3001/manifest.webmanifest)",
+      "Skill(update-config)"
     ]
   }
 }

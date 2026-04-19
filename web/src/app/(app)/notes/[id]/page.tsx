@@ -1,6 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getNote } from '@/features/notes/repository';
+import { listTagsForNote, listTagsWithCounts } from '@/features/tags/repository';
 import { NoteEditor } from './NoteEditor';
 
 export default async function NotePage({ params }: { params: Promise<{ id: string }> }) {
@@ -14,6 +15,11 @@ export default async function NotePage({ params }: { params: Promise<{ id: strin
   const note = await getNote(supabase, user.id, id);
   if (!note) notFound();
 
+  const [tagsForNote, allTags] = await Promise.all([
+    listTagsForNote(supabase, user.id, id),
+    listTagsWithCounts(supabase, user.id),
+  ]);
+
   return (
     <NoteEditor
       key={note.id}
@@ -23,6 +29,8 @@ export default async function NotePage({ params }: { params: Promise<{ id: strin
       initialContentText={note.content_text}
       isFavorite={note.is_favorite}
       editedAt={note.edited_at}
+      initialTags={tagsForNote}
+      tagSuggestions={allTags.map((t) => t.name)}
     />
   );
 }
