@@ -13,7 +13,10 @@
       "Bash(curl -s http://127.0.0.1:3001/ -o /tmp/memo-home.html)",
       "Read(//tmp/**)",
       "Bash(curl -sI http://127.0.0.1:3001/manifest.webmanifest)",
-      "Skill(update-config)"
+      "Skill(update-config)",
+      "Bash(curl -s -o /dev/null -w \"public check: %{http_code}\\\\n\" https://github.com/okayhan89/memo)",
+      "Bash(gh auth *)",
+      "Bash(echo \"---exit=$?---\")"
     ]
   }
 }
