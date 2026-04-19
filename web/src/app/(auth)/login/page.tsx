@@ -1,5 +1,7 @@
 import Link from 'next/link';
-import { LoginForm } from './LoginForm';
+import { clientEnv, isSupabaseConfigured } from '@/lib/env';
+import { GoogleSignInButton } from '@/features/auth/GoogleSignInButton';
+import { MagicLinkForm } from './LoginForm';
 
 type SearchParams = {
   next?: string;
@@ -21,12 +23,12 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       </Link>
 
       <h1 className="text-ink font-serif text-(length:--text-2xl) leading-tight tracking-tight">
-        {claim ? '이 초안을 모든 기기로.' : '다시 쓰기로.'}
+        {claim ? '이 초안을 모든 기기로.' : '한 번만 로그인하면 어디서든.'}
       </h1>
       <p className="text-ink-muted mt-3 text-sm leading-relaxed">
         {claim
           ? '로그인만 하면 이 기기에 저장해둔 초안이 클라우드로 옮겨져요. 다음 기기에서 바로 이어씁니다.'
-          : '이메일 주소를 알려주시면, 비밀번호 없이 바로 들어갈 수 있는 링크를 보내드려요.'}
+          : 'Google 계정으로 1초 안에 시작하세요. 비밀번호도, 별도 가입도 없어요.'}
       </p>
 
       {params.reason === 'supabase_not_configured' ? (
@@ -36,7 +38,22 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         </p>
       ) : null}
 
-      <LoginForm next={params.next} claim={claim} />
+      <div className="mt-8 flex flex-col gap-4">
+        <GoogleSignInButton
+          claim={claim}
+          next={params.next}
+          appUrl={clientEnv.NEXT_PUBLIC_APP_URL}
+          supabaseConfigured={isSupabaseConfigured}
+        />
+
+        <div className="flex items-center gap-3 text-xs">
+          <span className="bg-line h-px flex-1" aria-hidden />
+          <span className="text-ink-subtle font-mono tracking-[0.22em] uppercase">또는</span>
+          <span className="bg-line h-px flex-1" aria-hidden />
+        </div>
+
+        <MagicLinkForm next={params.next} claim={claim} />
+      </div>
 
       <p className="text-ink-subtle mt-10 text-xs">
         가입·로그인을 진행하면 Memo의{' '}

@@ -4,7 +4,10 @@
       "Bash(git *)",
       "Bash(PORT=3001 pnpm dev *)",
       "Bash(curl -sI http://127.0.0.1:3001/)",
-      "Bash(curl -s http://127.0.0.1:3001/api/health)"
+      "Bash(curl -s http://127.0.0.1:3001/api/health)",
+      "Bash(pkill -f \"next-server\")",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(curl -s http://127.0.0.1:3001/)"
     ]
   }
 }

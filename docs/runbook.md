@@ -38,14 +38,47 @@ web/node_modules/.bin/supabase db push --include-all
 
 ## 3. Auth 설정
 
+### 3.1 Redirect URL
+
 Supabase 대시보드 → Authentication → URL Configuration
 
-- Site URL: `https://memo.example.com` (실제 도메인)
+- Site URL: `https://memo.example.com` (실제 도메인; 개발은 `http://localhost:3001`)
 - Additional Redirect URLs:
   - `https://memo.example.com/auth/callback`
+  - `http://localhost:3001/auth/callback` (로컬)
   - (프리뷰를 쓰려면) `https://*.vercel.app/auth/callback`
 
-Email 템플릿을 한국어로 바꿔두면 사용자 경험이 훨씬 좋습니다.
+### 3.2 Google OAuth (권장 · 1-click 로그인)
+
+Google Cloud Console에서 OAuth 클라이언트를 만들고 Supabase에 연결합니다.
+
+1. https://console.cloud.google.com → 프로젝트 생성 (이름: `Memo`)
+2. **APIs & Services → OAuth consent screen**
+   - User Type: **External** (공개 앱) 또는 **Internal** (워크스페이스 전용)
+   - 앱 이름 `Memo`, 지원 이메일/개발자 이메일 지정
+   - Scopes: `.../auth/userinfo.email`, `.../auth/userinfo.profile`, `openid`
+   - Test users: 테스트 단계라면 본인 이메일 추가
+3. **APIs & Services → Credentials → Create Credentials → OAuth client ID**
+   - Application type: **Web application**
+   - Authorized JavaScript origins:
+     - `https://memo.example.com`
+     - `http://localhost:3001`
+   - Authorized redirect URIs — **Supabase 전용 콜백을 반드시 넣어야 합니다**:
+     - `https://<project-ref>.supabase.co/auth/v1/callback`
+     - (Supabase의 `Authentication → Providers → Google` 페이지 상단에 정확한 값 표시됨)
+   - Create → **Client ID / Client Secret** 복사
+4. Supabase 대시보드 → **Authentication → Providers → Google**
+   - Enable Google
+   - Client ID / Client Secret 붙여넣기
+   - "Skip nonce check" 는 그대로 꺼둠 (PKCE 사용 중)
+   - Save
+5. 로컬/프로덕션에서 `/login` 열면 "Google로 계속하기" 버튼으로 1클릭 로그인 됩니다.
+
+> 운영 전에 OAuth consent screen을 **Published**(외부 앱)로 올리거나 Test Users에 실제 사용자를 포함시키세요. Published 전까지는 Test Users만 로그인 가능합니다.
+
+### 3.3 매직 링크 (보조)
+
+이메일 템플릿을 한국어로 바꿔두면 사용자 경험이 좋아집니다. Authentication → Email Templates 에서 Subject/본문을 편집하세요.
 
 ## 4. 로컬 `.env.local` 작성
 
