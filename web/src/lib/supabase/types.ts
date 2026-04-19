@@ -86,10 +86,25 @@ export interface Database {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      search_notes: {
+        Args: { p_query: string; p_limit?: number };
+        Returns: Array<{
+          id: string;
+          title: string;
+          snippet: string;
+          rank: number;
+          edited_at: string;
+          is_favorite: boolean;
+          is_pinned: boolean;
+        }>;
+      };
+    };
     Enums: Record<string, never>;
   };
 }
+
+export type SearchHit = Database['public']['Functions']['search_notes']['Returns'][number];
 
 export type NoteRow = Database['public']['Tables']['notes']['Row'];
 export type FolderRow = Database['public']['Tables']['folders']['Row'];
