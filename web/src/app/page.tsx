@@ -1,20 +1,21 @@
 import Link from 'next/link';
+import { GuestEditor } from '@/features/guest/GuestEditor';
 
 const PILLARS = [
   {
     kaptien: '01',
     title: '종이 같은 에디터',
-    body: 'Tiptap 기반의 리치 에디터 위에서 마크다운 단축키, 슬래시 커맨드, 코드 하이라이트가 모두 지원됩니다. 서체와 간격은 잡지의 리듬을 따릅니다.',
+    body: 'Tiptap 기반의 리치 에디터 위에서 마크다운 단축키, 코드 하이라이트가 모두 지원됩니다. 서체와 간격은 잡지의 리듬을 따릅니다.',
   },
   {
     kaptien: '02',
     title: '한국어가 일등 시민',
-    body: 'IME 끊김 없는 입력, 한국어 형태소·부분 일치 검색, 한글 기본 폴백 폰트. "외국 앱을 번역해서 쓰는 느낌" 없이 바로 편합니다.',
+    body: 'IME 끊김 없는 입력, 한국어 형태소·부분 일치 검색, 한글 기본 폴백 폰트. 번역투 없이 바로 편합니다.',
   },
   {
     kaptien: '03',
-    title: '끊기지 않는 연결',
-    body: '오프라인에서 작성한 문장이 재접속 순간 조용히 동기화됩니다. 충돌 없음을 보장하는 CRDT 기반 설계.',
+    title: '가입 없이 먼저',
+    body: '이 화면의 에디터는 지금 바로 쓸 수 있어요. 이 기기에 저장되며, 필요할 때만 한 번의 클릭으로 모든 기기로 이어갑니다.',
   },
   {
     kaptien: '04',
@@ -23,75 +24,53 @@ const PILLARS = [
   },
 ];
 
-const STEPS = [
-  ['쓴다', '단축키 하나로 빈 화면, 커서만.'],
-  ['찾는다', '⌘K 명령 팔레트, 한국어 전체 검색.'],
-  ['잇는다', '다른 기기에서, 오프라인에서, 바로 이어서.'],
-  ['연다', '공개 링크로 팀과 공유. 원하면 PDF/MD 내보내기.'],
-];
-
 export default function HomePage() {
   return (
     <div className="bg-paper min-h-dvh">
       <main className="relative mx-auto flex max-w-5xl flex-col px-6 md:px-10">
-        <header className="flex items-center justify-between pt-10">
+        <header className="flex items-center justify-between pt-8">
           <span className="text-ink-subtle font-mono text-xs tracking-[0.22em] uppercase">
-            Memo · v0.0
+            Memo · v0.1
           </span>
-          <nav aria-label="주요 탐색" className="text-ink-muted flex items-center gap-6 text-sm">
-            <Link href="/about" className="hover:text-ink">
+          <nav aria-label="주요 탐색" className="text-ink-muted flex items-center gap-5 text-sm">
+            <Link href="/about" className="hover:text-ink hidden md:inline">
               소개
             </Link>
-            <Link href="/notes" className="hover:text-ink">
-              앱 열기
+            <Link href="/notes" className="hover:text-ink hidden md:inline">
+              내 노트
             </Link>
             <Link
               href="/login"
               className="bg-ink text-paper rounded-full px-3.5 py-1.5 text-xs font-medium transition hover:opacity-90"
             >
-              시작하기
+              로그인
             </Link>
           </nav>
         </header>
 
-        <section
-          aria-labelledby="hero"
-          className="flex flex-col justify-center py-24 md:min-h-[70dvh] md:py-32"
-        >
-          <p className="text-accent mb-6 font-mono text-xs tracking-[0.22em] uppercase">
-            Editorial · Offline-first · Open
+        <section aria-labelledby="hero" className="pt-16 md:pt-24">
+          <p className="text-accent mb-4 font-mono text-xs tracking-[0.22em] uppercase">
+            가입 없이 지금 바로
           </p>
           <h1
             id="hero"
-            className="text-ink max-w-4xl font-serif text-(length:--text-display) leading-[0.95] tracking-tight"
+            className="text-ink max-w-3xl font-serif text-(length:--text-3xl) leading-[1.02] tracking-tight md:text-(length:--text-display)"
           >
-            생각을 붙잡는
-            <br />
-            <span className="text-accent italic">가장 빠른</span> 방법.
+            첫 문장을 <span className="text-accent italic">아래</span>에 바로.
           </h1>
-          <p className="text-ink-muted mt-8 max-w-xl text-(length:--text-lg) leading-relaxed">
-            흐르는 문장을 놓치지 않는 에디터, 한국어를 이해하는 검색, 오프라인에서도 멈추지 않는
-            동기화. Memo는 매일 쓰는 사람을 위해 설계된 메모장입니다.
+          <p className="text-ink-muted mt-6 max-w-xl text-base leading-relaxed">
+            이메일도, 계정도 필요 없어요. 아래 카드에 바로 타이핑하면 이 기기에 자동 저장됩니다.
+            여러 기기에서 이어쓰고 싶을 때 한 번만 로그인하면 초안이 그대로 클라우드로 넘어갑니다.
           </p>
-          <div className="mt-12 flex items-center gap-4 text-sm">
-            <Link
-              href="/login"
-              className="bg-ink text-paper rounded-full px-5 py-3 font-medium transition hover:opacity-90"
-            >
-              지금 시작하기
-            </Link>
-            <Link
-              href="/about"
-              className="text-ink-muted hover:text-ink underline-offset-4 hover:underline"
-            >
-              왜 또 하나의 메모 앱인가요 →
-            </Link>
-          </div>
+        </section>
+
+        <section aria-label="빠른 메모 작성" className="mt-10 md:mt-14">
+          <GuestEditor />
         </section>
 
         <section
           aria-labelledby="pillars"
-          className="border-line grid gap-10 border-t py-20 md:grid-cols-2"
+          className="border-line mt-24 grid gap-10 border-t py-20 md:grid-cols-2"
         >
           <div>
             <p className="text-accent font-mono text-xs tracking-[0.22em] uppercase">Pillars</p>
@@ -123,26 +102,35 @@ export default function HomePage() {
         </section>
 
         <section aria-labelledby="how" className="border-line border-t py-20">
-          <p className="text-accent font-mono text-xs tracking-[0.22em] uppercase">How it works</p>
+          <p className="text-accent font-mono text-xs tracking-[0.22em] uppercase">
+            단축키 한 눈에
+          </p>
           <h2
             id="how"
             className="text-ink mt-4 font-serif text-(length:--text-2xl) leading-tight tracking-tight"
           >
-            네 동작이면 충분합니다.
+            키보드만으로 충분합니다.
           </h2>
-          <ol className="mt-12 grid gap-8 md:grid-cols-4">
-            {STEPS.map(([word, desc], i) => (
-              <li key={word} className="flex flex-col gap-3">
-                <span className="text-ink-subtle font-mono text-xs tracking-[0.18em]">
-                  0{i + 1}
-                </span>
-                <strong className="text-ink font-serif text-(length:--text-xl) leading-tight tracking-tight">
-                  {word}
-                </strong>
-                <span className="text-ink-muted text-sm leading-relaxed">{desc}</span>
-              </li>
+          <dl className="mt-10 grid gap-x-10 gap-y-4 md:grid-cols-2">
+            {[
+              ['⌘ + B', '굵게'],
+              ['⌘ + I', '기울임'],
+              ['#, ##, ###', '제목 1·2·3'],
+              ['- 또는 *', '글머리 기호 목록'],
+              ['1.', '번호 매기기 목록'],
+              ['> ', '인용구'],
+              ['```', '코드 블록'],
+              ['[ ]', '체크박스'],
+            ].map(([combo, what]) => (
+              <div
+                key={combo}
+                className="border-line flex items-center justify-between border-b py-3"
+              >
+                <span className="text-ink-muted font-mono text-xs tracking-[0.18em]">{combo}</span>
+                <span className="text-ink text-sm">{what}</span>
+              </div>
             ))}
-          </ol>
+          </dl>
         </section>
 
         <section aria-labelledby="cta" className="border-line border-t py-24">
@@ -152,17 +140,17 @@ export default function HomePage() {
                 id="cta"
                 className="text-ink font-serif text-(length:--text-2xl) leading-tight tracking-tight"
               >
-                이 문장을 당신의 Memo에 옮겨 보세요.
+                준비되었을 때 한 번만 로그인하세요.
               </h2>
               <p className="text-ink-muted mt-3 text-base leading-relaxed">
-                이메일 하나면 로그인 링크가 옵니다. 비밀번호는 없습니다.
+                지금 위에 쓴 초안이 클라우드로 옮겨져, 다른 기기에서도 그대로 이어집니다.
               </p>
             </div>
             <Link
-              href="/login"
+              href="/login?claim=1"
               className="bg-ink text-paper rounded-full px-6 py-3 text-sm font-medium transition hover:opacity-90"
             >
-              로그인 링크 받기 →
+              로그인하고 초안 옮기기 →
             </Link>
           </div>
         </section>
@@ -170,7 +158,7 @@ export default function HomePage() {
         <footer className="border-line flex items-center justify-between border-t py-8 text-xs">
           <span className="text-ink-subtle">© {new Date().getFullYear()} Memo</span>
           <span className="text-ink-subtle font-mono tracking-[0.18em] uppercase">
-            Phase 2 · editor landed
+            가입 전에 쓸 수 있는 메모
           </span>
         </footer>
       </main>

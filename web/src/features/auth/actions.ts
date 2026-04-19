@@ -26,6 +26,7 @@ export async function sendMagicLink(
   const parsed = loginSchema.safeParse({
     email: formData.get('email'),
     next: formData.get('next') ?? undefined,
+    claim: formData.get('claim') ?? undefined,
   });
 
   if (!parsed.success) {
@@ -36,6 +37,7 @@ export async function sendMagicLink(
   const supabase = await createSupabaseServerClient();
   const callbackUrl = new URL('/auth/callback', clientEnv.NEXT_PUBLIC_APP_URL);
   if (parsed.data.next) callbackUrl.searchParams.set('next', parsed.data.next);
+  if (parsed.data.claim === '1') callbackUrl.searchParams.set('claim', '1');
 
   const { error } = await supabase.auth.signInWithOtp({
     email: parsed.data.email,

@@ -4,10 +4,12 @@ import { LoginForm } from './LoginForm';
 type SearchParams = {
   next?: string;
   reason?: string;
+  claim?: string;
 };
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const params = await searchParams;
+  const claim = params.claim === '1';
 
   return (
     <main className="relative mx-auto flex min-h-dvh max-w-lg flex-col justify-center px-6 py-16">
@@ -19,19 +21,22 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       </Link>
 
       <h1 className="text-ink font-serif text-(length:--text-2xl) leading-tight tracking-tight">
-        다시 쓰기로.
+        {claim ? '이 초안을 모든 기기로.' : '다시 쓰기로.'}
       </h1>
       <p className="text-ink-muted mt-3 text-sm leading-relaxed">
-        이메일 주소를 알려주시면, 비밀번호 없이 바로 들어갈 수 있는 링크를 보내드려요.
+        {claim
+          ? '로그인만 하면 이 기기에 저장해둔 초안이 클라우드로 옮겨져요. 다음 기기에서 바로 이어씁니다.'
+          : '이메일 주소를 알려주시면, 비밀번호 없이 바로 들어갈 수 있는 링크를 보내드려요.'}
       </p>
 
       {params.reason === 'supabase_not_configured' ? (
         <p className="border-line bg-paper-sunken text-ink-muted mt-6 rounded-md border px-4 py-3 text-xs">
-          로컬에 Supabase 환경 변수가 아직 연결되지 않았습니다. 프로젝트를 연결하면 로그인 가능해요.
+          아직 Supabase가 연결되지 않아 클라우드 동기화가 꺼져 있어요. 그래도 홈의 빠른 메모는 이
+          기기에서는 그대로 동작합니다.
         </p>
       ) : null}
 
-      <LoginForm next={params.next} />
+      <LoginForm next={params.next} claim={claim} />
 
       <p className="text-ink-subtle mt-10 text-xs">
         가입·로그인을 진행하면 Memo의{' '}

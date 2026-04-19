@@ -5,7 +5,7 @@ import { sendMagicLink, type LoginActionState } from '@/features/auth/actions';
 
 const initialState: LoginActionState = { status: 'idle' };
 
-export function LoginForm({ next }: { next?: string }) {
+export function LoginForm({ next, claim }: { next?: string; claim?: boolean }) {
   const [state, formAction, pending] = useActionState(sendMagicLink, initialState);
 
   if (state.status === 'sent') {
@@ -18,6 +18,11 @@ export function LoginForm({ next }: { next?: string }) {
           <span className="text-ink font-medium">{state.message}</span>로 로그인 링크를 보냈어요.
           이메일이 오지 않는다면 스팸함을 확인하거나 다시 시도해주세요.
         </p>
+        {claim ? (
+          <p className="text-ink-subtle mt-3 text-xs">
+            로그인 후 이 기기에 저장된 초안이 자동으로 클라우드로 옮겨집니다.
+          </p>
+        ) : null}
       </div>
     );
   }
@@ -25,6 +30,7 @@ export function LoginForm({ next }: { next?: string }) {
   return (
     <form action={formAction} className="mt-8 flex flex-col gap-3">
       {next ? <input type="hidden" name="next" value={next} /> : null}
+      {claim ? <input type="hidden" name="claim" value="1" /> : null}
       <label htmlFor="email" className="text-ink-muted text-xs tracking-wider uppercase">
         이메일
       </label>

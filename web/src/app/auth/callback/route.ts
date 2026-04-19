@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
+  const claim = url.searchParams.get('claim');
   const next = url.searchParams.get('next') ?? '/notes';
 
   if (!code) {
@@ -19,5 +20,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(failUrl);
   }
 
-  return NextResponse.redirect(new URL(next, request.url));
+  const destination = new URL(next, request.url);
+  if (claim === '1') destination.searchParams.set('claim', '1');
+  return NextResponse.redirect(destination);
 }
