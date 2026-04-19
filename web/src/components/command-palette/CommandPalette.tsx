@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { createNoteAction } from '@/features/notes/actions';
 import { searchNotesAction } from '@/features/search/actions';
+import { renderSnippet } from '@/features/search/snippet';
 import type { SearchHit } from '@/lib/supabase/types';
 
 const DEBOUNCE_MS = 180;
@@ -101,7 +102,7 @@ export function CommandPalette() {
                   </span>
                   <span
                     className="text-ink-subtle [&>mark]:text-accent [&>mark]:bg-accent-soft line-clamp-2 text-xs leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: hit.snippet }}
+                    dangerouslySetInnerHTML={{ __html: renderSnippet(hit.snippet) }}
                   />
                 </Command.Item>
               ))}

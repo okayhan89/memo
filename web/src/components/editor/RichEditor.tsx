@@ -43,6 +43,8 @@ export function RichEditor({
       StarterKit.configure({
         codeBlock: false,
         heading: { levels: [1, 2, 3] },
+        // Disable StarterKit's bundled link so we can use the richer config below.
+        link: false,
       }),
       Placeholder.configure({ placeholder }),
       Link.configure({

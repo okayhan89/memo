@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { searchNotesAction } from '@/features/search/actions';
+import { renderSnippet } from '@/features/search/snippet';
 import { formatRelative } from '@/lib/format-date';
 import type { SearchHit } from '@/lib/supabase/types';
 
@@ -109,7 +110,7 @@ export function SearchClient({ initialQuery }: { initialQuery: string }) {
                 </div>
                 <p
                   className="text-ink-muted [&>mark]:text-accent [&>mark]:bg-accent-soft line-clamp-3 text-sm leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: hit.snippet }}
+                  dangerouslySetInnerHTML={{ __html: renderSnippet(hit.snippet) }}
                 />
               </Link>
             </li>

@@ -1,25 +1,49 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { RichEditor, type RichEditorValue } from '@/components/editor/RichEditor';
-import { clearGuestDraft, readGuestDraft, writeGuestDraft } from './storage';
+import { clearGuestDraft, readGuestDraft, writeGuestDraft, type GuestDraft } from './storage';
 
 const AUTOSAVE_MS = 400;
+const CHANGE_EVENT = 'memo-guest-draft-changed';
+
+const EMPTY_DRAFT: GuestDraft = {
+  title: '',
+  contentJson: { type: 'doc', content: [{ type: 'paragraph' }] },
+  contentText: '',
+  updatedAt: '',
+};
+
+const subscribe = (cb: () => void) => {
+  if (typeof window === 'undefined') return () => {};
+  window.addEventListener(CHANGE_EVENT, cb);
+  return () => window.removeEventListener(CHANGE_EVENT, cb);
+};
+
+const getClientSnapshot = (): GuestDraft => readGuestDraft() ?? EMPTY_DRAFT;
+const getServerSnapshot = (): GuestDraft => EMPTY_DRAFT;
 
 export function GuestEditor() {
-  // Read localStorage exactly once, synchronously at mount, via a lazy initializer
-  // so we avoid the "setState inside useEffect" anti-pattern and the extra render.
-  const initial = useMemo(() => readGuestDraft(), []);
+  // useSyncExternalStore returns the server snapshot during SSR and the first
+  // client paint (matching the HTML), and the live snapshot on subsequent
+  // paints. We key the inner shell on "server vs client" so React cleanly
+  // remounts it with the stored draft after hydration — no setState in effect,
+  // no hydration mismatch.
+  const stored = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
+  const isHydrated = stored !== EMPTY_DRAFT;
+  return <GuestEditorShell key={isHydrated ? 'client' : 'server'} initial={stored} />;
+}
 
-  const [title, setTitle] = useState(initial?.title ?? '');
-  const [wordCount, setWordCount] = useState(countWords(initial?.contentText ?? ''));
-  const [charCount, setCharCount] = useState(initial?.contentText.length ?? 0);
+function GuestEditorShell({ initial }: { initial: GuestDraft }) {
+  const [title, setTitle] = useState(initial.title);
+  const [wordCount, setWordCount] = useState(countWords(initial.contentText));
+  const [charCount, setCharCount] = useState(initial.contentText.length);
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
 
   const latest = useRef<RichEditorValue>({
-    json: initial?.contentJson ?? { type: 'doc', content: [{ type: 'paragraph' }] },
-    text: initial?.contentText ?? '',
+    json: initial.contentJson,
+    text: initial.contentText,
   });
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -33,6 +57,7 @@ export function GuestEditor() {
         updatedAt: new Date().toISOString(),
       });
       setLastSavedAt(new Date());
+      window.dispatchEvent(new Event(CHANGE_EVENT));
     }, AUTOSAVE_MS);
   };
 
@@ -58,6 +83,7 @@ export function GuestEditor() {
   const discard = () => {
     if (!window.confirm('작성한 내용을 모두 지울까요? 이 기기에서 지워집니다.')) return;
     clearGuestDraft();
+    window.dispatchEvent(new Event(CHANGE_EVENT));
     window.location.reload();
   };
 
@@ -91,7 +117,7 @@ export function GuestEditor() {
         />
         <div className="mt-4 min-h-[22rem]">
           <RichEditor
-            initialContent={initial?.contentJson}
+            initialContent={initial.contentJson}
             onChange={onContentChange}
             placeholder="여기에 바로 써 보세요. 엔터로 줄바꿈, ⌘B 굵게, ⌘I 기울임, `#`으로 제목."
             ariaLabel="빠른 메모 본문"
