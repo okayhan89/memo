@@ -1,0 +1,2 @@
+-- Optional: seed for local dev only. Do not run in production.
+-- Run with: supabase db reset (applies migrations + seeds)
