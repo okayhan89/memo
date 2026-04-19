@@ -1,0 +1,161 @@
+/* Editorial prose styles for the Tiptap editor surface.
+ * Keep rules scoped to `.prose-editor` so they never leak to marketing pages.
+ */
+
+.prose-editor {
+  color: var(--ink);
+  font-size: var(--text-base);
+  line-height: 1.8;
+  letter-spacing: -0.003em;
+  max-width: 68ch;
+}
+
+.prose-editor :where(p) {
+  margin: 0 0 1em;
+}
+
+.prose-editor :where(h1, h2, h3) {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 1.6em 0 0.5em;
+}
+
+.prose-editor :where(h1) {
+  font-size: var(--text-2xl);
+}
+
+.prose-editor :where(h2) {
+  font-size: var(--text-xl);
+}
+
+.prose-editor :where(h3) {
+  font-size: var(--text-lg);
+}
+
+.prose-editor :where(strong) {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.prose-editor :where(em) {
+  font-style: italic;
+}
+
+.prose-editor :where(a) {
+  color: var(--accent);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.prose-editor :where(blockquote) {
+  margin: 1.2em 0;
+  padding-left: 1.2rem;
+  border-left: 3px solid var(--line-strong);
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+.prose-editor :where(ul, ol) {
+  padding-left: 1.4rem;
+  margin: 0 0 1em;
+}
+
+.prose-editor :where(ul) {
+  list-style: disc;
+}
+
+.prose-editor :where(ol) {
+  list-style: decimal;
+}
+
+.prose-editor :where(li p) {
+  margin: 0;
+}
+
+.prose-editor :where(hr) {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 2em 0;
+}
+
+.prose-editor :where(code) {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  padding: 0.12em 0.35em;
+  background: var(--paper-sunken);
+  border-radius: var(--radius-sm);
+}
+
+.prose-editor :where(pre) {
+  margin: 1.2em 0;
+  padding: 1rem 1.25rem;
+  background: var(--paper-sunken);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  line-height: 1.55;
+}
+
+.prose-editor :where(pre code) {
+  background: transparent;
+  padding: 0;
+  font-size: 0.875em;
+}
+
+.prose-editor :where(ul[data-type='taskList']) {
+  list-style: none;
+  padding-left: 0;
+}
+
+.prose-editor :where(ul[data-type='taskList'] li) {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  margin-bottom: 0.25em;
+}
+
+.prose-editor :where(ul[data-type='taskList'] li > label) {
+  margin-top: 0.35em;
+}
+
+.prose-editor :where(ul[data-type='taskList'] li[data-checked='true'] > div) {
+  color: var(--ink-subtle);
+  text-decoration: line-through;
+}
+
+.prose-editor :where(ProseMirror-focused) {
+  outline: none;
+}
+
+.prose-editor .is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--ink-subtle);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Minimal code highlighting (lowlight default classes) */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-title.function_ {
+  color: var(--accent);
+}
+.hljs-string,
+.hljs-attr {
+  color: oklch(55% 0.13 150);
+}
+.hljs-comment {
+  color: var(--ink-subtle);
+  font-style: italic;
+}
+.hljs-number,
+.hljs-literal {
+  color: oklch(55% 0.15 250);
+}
+.hljs-variable,
+.hljs-built_in {
+  color: var(--ink-muted);
+}

@@ -19,7 +19,8 @@ export default async function NotePage({ params }: { params: Promise<{ id: strin
       key={note.id}
       id={note.id}
       initialTitle={note.title}
-      initialContent={note.content_text}
+      initialContentJson={note.content_json}
+      initialContentText={note.content_text}
       isFavorite={note.is_favorite}
       editedAt={note.edited_at}
     />

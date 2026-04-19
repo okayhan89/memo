@@ -3,11 +3,13 @@
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { deleteNoteAction, toggleFavoriteAction, updateNoteAction } from '@/features/notes/actions';
 import { formatRelative } from '@/lib/format-date';
+import { RichEditor, type RichEditorValue } from '@/components/editor/RichEditor';
 
 type Props = {
   id: string;
   initialTitle: string;
-  initialContent: string;
+  initialContentJson: unknown;
+  initialContentText: string;
   isFavorite: boolean;
   editedAt: string;
 };
@@ -16,33 +18,51 @@ type SaveState = 'idle' | 'dirty' | 'saving' | 'saved' | 'error';
 
 const SAVE_DEBOUNCE_MS = 600;
 
-export function NoteEditor({ id, initialTitle, initialContent, isFavorite, editedAt }: Props) {
+export function NoteEditor({
+  id,
+  initialTitle,
+  initialContentJson,
+  initialContentText,
+  isFavorite,
+  editedAt,
+}: Props) {
   const [title, setTitle] = useState(initialTitle);
-  const [content, setContent] = useState(initialContent);
   const [favorite, setFavorite] = useState(isFavorite);
   const [saveState, setSaveState] = useState<SaveState>('idle');
   const [lastSavedAt, setLastSavedAt] = useState<string>(editedAt);
   const [, startDelete] = useTransition();
-  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const baseline = useRef({ title: initialTitle, content: initialContent });
 
-  const scheduleSave = useCallback(
-    (nextTitle: string, nextContent: string) => {
-      if (saveTimer.current) clearTimeout(saveTimer.current);
-      saveTimer.current = setTimeout(async () => {
-        setSaveState('saving');
-        try {
-          await updateNoteAction({ id, title: nextTitle, contentText: nextContent });
-          baseline.current = { title: nextTitle, content: nextContent };
-          setSaveState('saved');
-          setLastSavedAt(new Date().toISOString());
-        } catch {
-          setSaveState('error');
-        }
-      }, SAVE_DEBOUNCE_MS);
-    },
-    [id],
-  );
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pending = useRef<{
+    title: string;
+    contentJson?: unknown;
+    contentText?: string;
+  }>({ title: initialTitle, contentText: initialContentText });
+
+  const flush = useCallback(async () => {
+    const snapshot = { ...pending.current };
+    setSaveState('saving');
+    try {
+      await updateNoteAction({
+        id,
+        title: snapshot.title,
+        contentJson: snapshot.contentJson,
+        contentText: snapshot.contentText,
+      });
+      setSaveState('saved');
+      setLastSavedAt(new Date().toISOString());
+    } catch {
+      setSaveState('error');
+    }
+  }, [id]);
+
+  const schedule = useCallback(() => {
+    setSaveState('dirty');
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      void flush();
+    }, SAVE_DEBOUNCE_MS);
+  }, [flush]);
 
   useEffect(
     () => () => {
@@ -53,18 +73,17 @@ export function NoteEditor({ id, initialTitle, initialContent, isFavorite, edite
 
   const onTitleChange = (value: string) => {
     setTitle(value);
-    if (value !== baseline.current.title) {
-      setSaveState('dirty');
-      scheduleSave(value, content);
-    }
+    pending.current = { ...pending.current, title: value };
+    schedule();
   };
 
-  const onContentChange = (value: string) => {
-    setContent(value);
-    if (value !== baseline.current.content) {
-      setSaveState('dirty');
-      scheduleSave(title, value);
-    }
+  const onContentChange = (value: RichEditorValue) => {
+    pending.current = {
+      ...pending.current,
+      contentJson: value.json,
+      contentText: value.text,
+    };
+    schedule();
   };
 
   const toggleFavorite = async () => {
@@ -134,18 +153,13 @@ export function NoteEditor({ id, initialTitle, initialContent, isFavorite, edite
         className="text-ink placeholder:text-ink-subtle mt-8 w-full bg-transparent font-serif text-(length:--text-3xl) leading-tight tracking-tight outline-none"
       />
 
-      <textarea
-        aria-label="본문"
-        value={content}
-        onChange={(e) => onContentChange(e.target.value)}
-        placeholder="쓰기 시작하세요…"
-        rows={20}
-        className="text-ink placeholder:text-ink-subtle mt-8 min-h-[60vh] w-full resize-none bg-transparent text-base leading-[1.8] outline-none"
-      />
-
-      <p className="text-ink-subtle mt-10 text-[11px]">
-        Phase 1 · 단순 텍스트 에디터. Phase 2에서 Tiptap 기반 리치 에디터로 교체됩니다.
-      </p>
+      <div className="mt-6">
+        <RichEditor
+          initialContent={initialContentJson}
+          onChange={onContentChange}
+          ariaLabel="노트 본문"
+        />
+      </div>
     </article>
   );
 }
