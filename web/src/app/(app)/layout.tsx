@@ -7,6 +7,7 @@ import { NewNoteButton } from './NewNoteButton';
 import { NotesSidebar } from './NotesSidebar';
 import { CommandPalette } from '@/components/command-palette/CommandPalette';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
+import { ConnectionIndicator } from '@/features/sync/ConnectionIndicator';
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createSupabaseServerClient();
@@ -50,6 +51,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
       <main className="bg-paper-raised min-w-0">{children}</main>
       <CommandPalette />
+      <ConnectionIndicator />
     </div>
   );
 }

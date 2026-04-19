@@ -15,13 +15,44 @@ const EMPTY_DRAFT: GuestDraft = {
   updatedAt: '',
 };
 
+// useSyncExternalStore requires getSnapshot to return a stable reference
+// between calls as long as the underlying data hasn't changed. Reading
+// localStorage + JSON.parse gives us a fresh object every call, which
+// trips React's "The result of getSnapshot should be cached" infinite-loop
+// guard. Cache the parsed draft by its serialized form; only mint a new
+// object when the raw storage value actually changes.
+let cachedRaw: string | null = null;
+let cachedSnapshot: GuestDraft = EMPTY_DRAFT;
+
+function refreshClientSnapshot(): GuestDraft {
+  if (typeof window === 'undefined') return EMPTY_DRAFT;
+  let raw: string | null = null;
+  try {
+    raw = window.localStorage.getItem('memo-guest-draft-v1');
+  } catch {
+    return EMPTY_DRAFT;
+  }
+  if (raw === cachedRaw) return cachedSnapshot;
+  cachedRaw = raw;
+  cachedSnapshot = readGuestDraft() ?? EMPTY_DRAFT;
+  return cachedSnapshot;
+}
+
 const subscribe = (cb: () => void) => {
   if (typeof window === 'undefined') return () => {};
-  window.addEventListener(CHANGE_EVENT, cb);
-  return () => window.removeEventListener(CHANGE_EVENT, cb);
+  const notify = () => {
+    cachedRaw = null; // Force re-read on next getSnapshot.
+    cb();
+  };
+  window.addEventListener(CHANGE_EVENT, notify);
+  window.addEventListener('storage', notify);
+  return () => {
+    window.removeEventListener(CHANGE_EVENT, notify);
+    window.removeEventListener('storage', notify);
+  };
 };
 
-const getClientSnapshot = (): GuestDraft => readGuestDraft() ?? EMPTY_DRAFT;
+const getClientSnapshot = (): GuestDraft => refreshClientSnapshot();
 const getServerSnapshot = (): GuestDraft => EMPTY_DRAFT;
 
 export function GuestEditor() {

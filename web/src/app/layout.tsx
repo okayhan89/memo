@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Fraunces, Inter, JetBrains_Mono } from 'next/font/google';
 import { ThemeScript } from '@/components/theme/ThemeScript';
+import { PWARegister } from '@/components/pwa/PWARegister';
 import './globals.css';
 
 const inter = Inter({
@@ -64,7 +65,10 @@ export default function RootLayout({
       <head>
         <ThemeScript />
       </head>
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        {children}
+        <PWARegister />
+      </body>
     </html>
   );
 }

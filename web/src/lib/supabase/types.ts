@@ -84,6 +84,25 @@ export interface Database {
         Update: Partial<Database['public']['Tables']['note_tags']['Row']>;
         Relationships: [];
       };
+      note_versions: {
+        Row: {
+          id: string;
+          note_id: string;
+          owner_id: string;
+          title: string;
+          content_json: unknown;
+          content_text: string;
+          reason: 'autosave' | 'manual' | 'restore';
+          created_at: string;
+        };
+        Insert: Partial<Database['public']['Tables']['note_versions']['Row']> & {
+          note_id: string;
+          owner_id: string;
+          content_json: unknown;
+        };
+        Update: Partial<Database['public']['Tables']['note_versions']['Row']>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -110,3 +129,4 @@ export type NoteRow = Database['public']['Tables']['notes']['Row'];
 export type FolderRow = Database['public']['Tables']['folders']['Row'];
 export type TagRow = Database['public']['Tables']['tags']['Row'];
 export type ProfileRow = Database['public']['Tables']['profiles']['Row'];
+export type NoteVersionRow = Database['public']['Tables']['note_versions']['Row'];
