@@ -1,25 +1,27 @@
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { redirect } from 'next/navigation';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { listNotes } from '@/features/notes/repository';
-import { listTagsWithCounts } from '@/features/tags/repository';
+import { getAuthenticatedUser } from '@/lib/supabase/server';
+import { getCachedNotes, getCachedTagsWithCounts } from '@/lib/server-cache';
 import { signOut } from '@/features/auth/actions';
 import { NewNoteButton } from './NewNoteButton';
 import { NotesSidebar } from './NotesSidebar';
-import { CommandPalette } from '@/components/command-palette/CommandPalette';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { ConnectionIndicator } from '@/features/sync/ConnectionIndicator';
 
+// Heavy client components that aren't needed for first paint — load lazily so
+// the sidebar/main render isn't blocked waiting for their JS.
+const CommandPalette = dynamic(() =>
+  import('@/components/command-palette/CommandPalette').then((m) => m.CommandPalette),
+);
+
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthenticatedUser();
   if (!user) redirect('/login');
 
   const [notes, tags] = await Promise.all([
-    listNotes(supabase, user.id),
-    listTagsWithCounts(supabase, user.id),
+    getCachedNotes(user.id),
+    getCachedTagsWithCounts(user.id),
   ]);
 
   return (
@@ -29,6 +31,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <Link
             href="/"
             className="text-ink-subtle font-mono text-[11px] tracking-[0.22em] uppercase"
+            prefetch
           >
             Memo
           </Link>

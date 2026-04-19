@@ -1,24 +1,21 @@
 import { notFound, redirect } from 'next/navigation';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { getNote } from '@/features/notes/repository';
-import { listTagsForNote, listTagsWithCounts } from '@/features/tags/repository';
+import { getAuthenticatedUser } from '@/lib/supabase/server';
+import { getCachedNote, getCachedTagsForNote, getCachedTagsWithCounts } from '@/lib/server-cache';
 import { NoteEditor } from './NoteEditor';
 
 export default async function NotePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthenticatedUser();
   if (!user) redirect('/login');
 
-  const note = await getNote(supabase, user.id, id);
-  if (!note) notFound();
-
-  const [tagsForNote, allTags] = await Promise.all([
-    listTagsForNote(supabase, user.id, id),
-    listTagsWithCounts(supabase, user.id),
+  // Fire all three in parallel. getCachedTagsWithCounts is also called from
+  // the layout, so the second call here is a no-op deduped by React.cache.
+  const [note, tagsForNote, allTags] = await Promise.all([
+    getCachedNote(user.id, id),
+    getCachedTagsForNote(user.id, id),
+    getCachedTagsWithCounts(user.id),
   ]);
+  if (!note) notFound();
 
   return (
     <NoteEditor

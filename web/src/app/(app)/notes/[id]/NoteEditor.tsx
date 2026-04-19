@@ -1,9 +1,9 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { deleteNoteAction, toggleFavoriteAction, updateNoteAction } from '@/features/notes/actions';
 import { saveNoteVersionAction } from '@/features/versions/actions';
-import { VersionsPanel } from '@/features/versions/VersionsPanel';
 import { enqueueUpdate, readAllPending, removeUpdate } from '@/features/sync/queue';
 import { useOnline } from '@/features/sync/useConnection';
 import { useNoteRealtime, type RemoteNoteUpdate } from '@/features/sync/useNoteRealtime';
@@ -11,6 +11,13 @@ import { TagChips } from '@/features/tags/TagChips';
 import type { TagRow } from '@/lib/supabase/types';
 import { formatRelative } from '@/lib/format-date';
 import { RichEditor, type RichEditorValue } from '@/components/editor/RichEditor';
+
+// History drawer is only needed after the user explicitly opens it; splitting
+// it off keeps the first render JS lean.
+const VersionsPanel = dynamic(
+  () => import('@/features/versions/VersionsPanel').then((m) => m.VersionsPanel),
+  { ssr: false },
+);
 
 type Props = {
   id: string;

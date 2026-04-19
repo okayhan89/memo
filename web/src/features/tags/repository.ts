@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, TagRow } from '@/lib/supabase/types';
 import { normalizeTagName, tagKey } from './schemas';
@@ -12,7 +13,7 @@ export type TagWithCount = TagRow & { count: number };
  * to the round-trip saving, and it keeps this module independent of any
  * Supabase-generated relationship metadata.
  */
-export async function listTagsWithCounts(
+export const listTagsWithCounts = cache(async function listTagsWithCounts(
   supabase: Client,
   ownerId: string,
 ): Promise<TagWithCount[]> {
@@ -54,7 +55,7 @@ export async function listTagsWithCounts(
   }
 
   return tags.map((t) => ({ ...t, count: counts.get(t.id) ?? 0 }));
-}
+});
 
 /** Find-or-create a tag by normalized name and return its row. */
 export async function upsertTag(
