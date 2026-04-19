@@ -23,7 +23,11 @@
       "Bash(curl -sI https://memo-1fjq.vercel.app/about)",
       "Bash(curl -s \"https://memo-c2r2uc7a3-okayhan89s-projects.vercel.app/api/health\")",
       "Bash(dig +short memo.ggogom.co.kr CNAME)",
-      "Bash(curl -sI https://memo.ggogom.co.kr/)"
+      "Bash(curl -sI https://memo.ggogom.co.kr/)",
+      "Bash(dig +short bkbtsjktooifzfbpjgvl.supabase.co)",
+      "Bash(read ip *)",
+      "Bash(curl -s https://ipinfo.io/__TRACKED_VAR__)",
+      "Bash(curl *)"
     ]
   }
 }

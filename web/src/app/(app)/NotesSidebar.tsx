@@ -110,10 +110,14 @@ export function NotesSidebar({ notes, tags }: Props) {
             {visible.map((note) => {
               const isActive = note.id === activeId;
               const title = note.title.trim().length > 0 ? note.title : '제목 없음';
+              const href = `/notes/${note.id}`;
               return (
                 <li key={note.id}>
                   <Link
-                    href={`/notes/${note.id}`}
+                    href={href}
+                    prefetch
+                    onMouseEnter={() => router.prefetch(href)}
+                    onFocus={() => router.prefetch(href)}
                     className={cn(
                       'mx-2 flex flex-col gap-1 rounded-md px-3 py-2 text-sm transition',
                       isActive
