@@ -135,6 +135,13 @@ export function NoteEditor({
           >
             {favorite ? '★ 즐겨찾기' : '☆ 즐겨찾기'}
           </button>
+          <a
+            href={`/api/notes/${id}/export`}
+            download
+            className="text-ink-muted hover:text-ink transition"
+          >
+            ↓ .md
+          </a>
           <button
             type="button"
             onClick={onDelete}
