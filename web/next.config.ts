@@ -16,10 +16,16 @@ const connectSrc = ["'self'", supabaseOrigin, supabaseOrigin.replace('https://',
   .filter(Boolean)
   .join(' ');
 
-// CSP: relax script-src in development to let Next.js HMR + react-refresh work.
+// CSP: relax script-src in development to let Next.js HMR + react-refresh
+// work. 'unsafe-inline' stays in prod because Next.js emits hydration
+// bootstrap as inline scripts; moving to nonces is a Phase 8 follow-up.
+const scriptSrc = isProd
+  ? "'self' 'unsafe-inline' blob:"
+  : "'self' 'unsafe-eval' 'unsafe-inline' blob:";
+
 const csp = [
   `default-src 'self'`,
-  `script-src 'self' ${isProd ? '' : "'unsafe-eval' 'unsafe-inline'"} 'unsafe-inline' blob:`,
+  `script-src ${scriptSrc}`,
   `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
   `font-src 'self' https://fonts.gstatic.com data:`,
   `img-src 'self' data: https: blob:`,

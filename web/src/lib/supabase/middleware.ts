@@ -13,9 +13,14 @@ const PUBLIC_PATHS = [
   '/_next',
   '/favicon',
   '/api/health',
+  '/sw.js',
+  '/icon.svg',
 ];
 
+const PUBLIC_EXACT = new Set(['/manifest.webmanifest', '/robots.txt', '/sitemap.xml']);
+
 function isPublicPath(pathname: string) {
+  if (PUBLIC_EXACT.has(pathname)) return true;
   return PUBLIC_PATHS.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
 
