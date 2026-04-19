@@ -98,6 +98,21 @@
   line-height: 1.55;
 }
 
+.prose-editor :where(img.prose-editor-image, img) {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1.2em 0;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: var(--paper-sunken);
+}
+
+.prose-editor :where(.ProseMirror-selectednode img) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
 .prose-editor :where(pre code) {
   background: transparent;
   padding: 0;

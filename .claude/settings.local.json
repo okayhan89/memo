@@ -16,7 +16,14 @@
       "Skill(update-config)",
       "Bash(curl -s -o /dev/null -w \"public check: %{http_code}\\\\n\" https://github.com/okayhan89/memo)",
       "Bash(gh auth *)",
-      "Bash(echo \"---exit=$?---\")"
+      "Bash(echo \"---exit=$?---\")",
+      "Bash(curl -sI https://memo-1fjq.vercel.app/)",
+      "Bash(curl -sI https://memo-1fjq.vercel.app/login)",
+      "Bash(curl -s https://memo-1fjq.vercel.app/api/health)",
+      "Bash(curl -sI https://memo-1fjq.vercel.app/about)",
+      "Bash(curl -s \"https://memo-c2r2uc7a3-okayhan89s-projects.vercel.app/api/health\")",
+      "Bash(dig +short memo.ggogom.co.kr CNAME)",
+      "Bash(curl -sI https://memo.ggogom.co.kr/)"
     ]
   }
 }

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Fraunces, Inter, JetBrains_Mono } from 'next/font/google';
 import { ThemeScript } from '@/components/theme/ThemeScript';
 import { PWARegister } from '@/components/pwa/PWARegister';
+import { clientEnv } from '@/lib/env';
 import './globals.css';
 
 const inter = Inter({
@@ -23,23 +24,54 @@ const jetbrainsMono = JetBrains_Mono({
   display: 'swap',
 });
 
+const APP_URL = clientEnv.NEXT_PUBLIC_APP_URL;
+const TITLE = 'Memo — 생각을 붙잡는 가장 빠른 방법';
+const DESCRIPTION =
+  '가입 없이 지금 바로 쓰고, 원할 때만 로그인해서 모든 기기로 이어쓰세요. 한국어 검색, 오프라인 저장, 버전 히스토리까지.';
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://memo.local'),
+  metadataBase: new URL(APP_URL),
   title: {
-    default: 'Memo — 생각을 붙잡는 가장 빠른 방법',
+    default: TITLE,
     template: '%s · Memo',
   },
-  description:
-    '오프라인에서도 흐르는 생각을 즉시 붙잡고, 한국어 검색과 CRDT 동기화로 언제 어디서든 이어쓰세요.',
+  description: DESCRIPTION,
   applicationName: 'Memo',
-  authors: [{ name: 'Memo' }],
+  authors: [{ name: 'Memo', url: APP_URL }],
+  keywords: [
+    '메모 앱',
+    '한국어 메모',
+    '노트 앱',
+    'Tiptap',
+    '오프라인 메모',
+    'Notion 대안',
+    '한국어 검색',
+    'Memo',
+  ],
+  creator: 'Memo',
+  publisher: 'Memo',
+  alternates: {
+    canonical: APP_URL,
+  },
   openGraph: {
-    title: 'Memo — 생각을 붙잡는 가장 빠른 방법',
-    description:
-      '오프라인에서도 흐르는 생각을 즉시 붙잡고, 한국어 검색과 CRDT 동기화로 이어쓰세요.',
+    title: TITLE,
+    description: DESCRIPTION,
     type: 'website',
+    url: APP_URL,
+    siteName: 'Memo',
     locale: 'ko_KR',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  category: 'productivity',
 };
 
 export const viewport: Viewport = {

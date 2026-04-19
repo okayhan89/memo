@@ -152,6 +152,7 @@ function GuestEditorShell({ initial }: { initial: GuestDraft }) {
             onChange={onContentChange}
             placeholder="여기에 바로 써 보세요. 엔터로 줄바꿈, ⌘B 굵게, ⌘I 기울임, `#`으로 제목."
             ariaLabel="빠른 메모 본문"
+            allowImageUpload={false}
           />
         </div>
       </div>
