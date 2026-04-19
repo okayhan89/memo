@@ -5,6 +5,8 @@ import { listNotes } from '@/features/notes/repository';
 import { signOut } from '@/features/auth/actions';
 import { NewNoteButton } from './NewNoteButton';
 import { NotesSidebar } from './NotesSidebar';
+import { CommandPalette } from '@/components/command-palette/CommandPalette';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createSupabaseServerClient();
@@ -28,22 +30,26 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <NewNoteButton />
         </header>
         <NotesSidebar notes={notes} />
-        <footer className="border-line flex items-center justify-between border-t px-5 py-3 text-xs">
-          <span className="text-ink-subtle truncate" title={user.email ?? ''}>
+        <footer className="border-line flex items-center justify-between gap-3 border-t px-4 py-3 text-xs">
+          <span className="text-ink-subtle min-w-0 truncate" title={user.email ?? ''}>
             {user.email}
           </span>
-          <form action={signOut}>
-            <button
-              type="submit"
-              className="text-ink-muted hover:text-ink underline-offset-4 hover:underline"
-            >
-              로그아웃
-            </button>
-          </form>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <form action={signOut}>
+              <button
+                type="submit"
+                className="text-ink-muted hover:text-ink underline-offset-4 hover:underline"
+              >
+                로그아웃
+              </button>
+            </form>
+          </div>
         </footer>
       </aside>
 
       <main className="bg-paper-raised min-w-0">{children}</main>
+      <CommandPalette />
     </div>
   );
 }

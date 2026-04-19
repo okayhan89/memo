@@ -49,3 +49,28 @@ export async function deleteNoteAction(input: { id: string }) {
   revalidatePath('/notes', 'layout');
   redirect('/notes');
 }
+
+export async function restoreNoteAction(input: { id: string }) {
+  const parsed = idSchema.parse(input);
+  const { supabase, user } = await requireUser();
+  const { error } = await supabase
+    .from('notes')
+    .update({ deleted_at: null })
+    .eq('id', parsed.id)
+    .eq('owner_id', user.id);
+  if (error) throw error;
+  revalidatePath('/trash');
+  revalidatePath('/notes', 'layout');
+}
+
+export async function hardDeleteNoteAction(input: { id: string }) {
+  const parsed = idSchema.parse(input);
+  const { supabase, user } = await requireUser();
+  const { error } = await supabase
+    .from('notes')
+    .delete()
+    .eq('id', parsed.id)
+    .eq('owner_id', user.id);
+  if (error) throw error;
+  revalidatePath('/trash');
+}
